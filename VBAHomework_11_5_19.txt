@@ -1,0 +1,154 @@
+Sub Stocks()
+
+  For Each ws In Worksheets
+   
+    Dim ticker As String
+ 
+    Dim tickervolume As Double
+    tickervolume = 0
+
+    Dim Summary_Table_Row As Double
+    Summary_Table_Row = 2
+
+   
+    Dim first_open As Double
+    Dim last_close As Double
+   
+    Dim row_counter As Double
+    row_counter = 0
+   
+    Dim yearly_change As Double
+    Dim percent_change As Double
+   
+    Dim greatest_increase_ticker As String
+    Dim greatest_increase As Double
+    greatest_increase = 0
+   
+    Dim greatest_decrease_ticker As String
+    Dim greatest_decrease As Double
+    greatest_decrease = 0
+   
+    Dim greatest_volume_ticker As String
+    Dim greatest_volume As Double
+    greatest_volume = 0
+       
+    Dim lastrow As Double
+
+    lastrow = Cells(Rows.Count, 1).End(xlUp).Row
+
+    For i = 2 To lastrow
+
+        If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+
+            ticker = ws.Cells(i, 1).Value
+
+            tickervolume = tickervolume + ws.Cells(i, 7).Value
+           
+            last_close = ws.Cells(i, 6).Value
+           
+            first_open = ws.Cells(i - row_counter, 3).Value
+           
+            yearly_change = -1 * (first_open - last_close)
+           
+            If last_close <> 0 Then
+           
+                percent_change = (first_open / last_close) / 100
+               
+            Else
+                percent_change = 0
+               
+            End If
+           
+            ws.Range("I" & Summary_Table_Row).Value = ticker
+           
+            ws.Range("J" & Summary_Table_Row).Value = yearly_change
+           
+            ws.Range("K" & Summary_Table_Row).Value = percent_change
+
+            ws.Range("L" & Summary_Table_Row).Value = tickervolume
+           
+            Summary_Table_Row = Summary_Table_Row + 1
+
+            tickervolume = 0
+           
+            row_counter = 0
+           
+        Else
+           
+            tickervolume = tickervolume + ws.Cells(i, 7).Value
+                       
+            row_counter = row_counter + 1
+           
+        End If
+
+    Next i
+
+    ws.Cells(1, 9).Value = "Ticker"
+    ws.Cells(1, 10).Value = "Yearly Change"
+    ws.Cells(1, 11).Value = "Percent Change"
+    ws.Cells(1, 12).Value = "Total Stock Volume"
+    ws.Cells(1, 16).Value = "Ticker"
+    ws.Cells(1, 17).Value = "Value"
+    ws.Cells(2, 15).Value = "Greatest % Increase"
+    ws.Cells(3, 15).Value = "Greatest % Decrease"
+    ws.Cells(4, 15).Value = "Greatest Total Volume"
+   
+    For i = 2 To lastrow
+   
+         If ws.Cells(i, 10).Value > greatest_increase Then
+                       
+             greatest_increase = ws.Cells(i, 10).Value
+               
+              greatest_increase_ticker = ws.Cells(i, 9).Value
+             
+              ws.Cells(2, 16).Value = greatest_increase_ticker
+             
+              ws.Cells(2, 17).Value = greatest_increase
+               
+            End If
+           
+            greatest_decrease_finder = ws.Cells(i, 10).Value
+           
+            If ws.Cells(i, 10).Value < greatest_decrease Then
+           
+                greatest_decrease = ws.Cells(i, 10).Value
+               
+                greatest_decrease_ticker = ws.Cells(i, 9).Value
+               
+                 ws.Cells(3, 16).Value = greatest_decrease_ticker
+                 
+                 ws.Cells(3, 17).Value = greatest_decrease
+               
+            End If
+           
+            If ws.Cells(i, 12).Value > greatest_volume Then
+           
+                greatest_volume = ws.Cells(i, 12).Value
+               
+                greatest_volume_ticker = ws.Cells(i, 9).Value
+               
+                ws.Cells(4, 16).Value = greatest_volume_ticker
+               
+                ws.Cells(4, 17).Value = greatest_volume
+               
+            End If
+           
+             If ws.Cells(i, 10).Value > 0 Then
+           
+                ws.Cells(i, 10).Interior.ColorIndex = 4
+               
+            End If
+           
+            If ws.Cells(i, 10).Value < 0 Then
+               
+                ws.Cells(i, 10).Interior.ColorIndex = 3
+               
+            End If
+           
+        Next i
+
+    ws.Range("K2:K" & lastrow).Style = "Percent"
+
+  Next ws
+
+End Sub
